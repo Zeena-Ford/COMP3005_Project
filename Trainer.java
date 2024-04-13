@@ -1,7 +1,7 @@
 /**
  *  Trainer class representing the trainers in a Gym
  *
- * @author Zeena Ford 101229954
+ * @author Zeena Ford 101229954, Zeina Mouhtadi 101169685
  * @version April 12, 2024
  */
 
