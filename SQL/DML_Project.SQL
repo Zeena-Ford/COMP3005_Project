@@ -1,10 +1,10 @@
 
 INSERT INTO Members (first_name, last_name, email, phone, join_date, credit_card_balance) 
 VALUES 
-('Krist', 'Loth', 'kristloth@gmail.com', '613-233-4456', '2021-06-01', '1000'),
-('Lilly', 'Blake', 'lillyblake@gmail.com', '613-523-1234', '2022-06-11', '1000'),
-('Ben', 'Flore', 'benflore@gmail.com', '613-618-9823', '2023-01-17', '1000'),
-('James', 'Potter', 'jamespotter@gmail.com', '613-555-5129', '2024-06-19', '1000');
+('Krist', 'Loth', 'kristloth@gmail.com', '613-233-4456', '2021-06-01', 1000),
+('Lilly', 'Blake', 'lillyblake@gmail.com', '613-523-1234', '2022-06-11', 1000),
+('Ben', 'Flore', 'benflore@gmail.com', '613-618-9823', '2023-01-17', 1000),
+('James', 'Potter', 'jamespotter@gmail.com', '613-555-5129', '2024-06-19', 1000);
 
 
 
