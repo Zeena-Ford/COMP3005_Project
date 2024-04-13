@@ -2,8 +2,8 @@
 
 
 
-## Author: Zeena Ford, 101229954 ....
-Contact: zeenaford@cmail.carleton.ca ....
+## Author: Zeena Ford 101229954 and Zeina Mouhtadi 101169685
+Contact: zeenaford@cmail.carleton.ca
 
 
 
