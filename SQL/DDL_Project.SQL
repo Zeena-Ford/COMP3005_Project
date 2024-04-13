@@ -14,7 +14,7 @@ CREATE TABLE Trainers (
     first_name VARCHAR(20) NOT NULL,
     last_name VARCHAR(20) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    phone VARCHAR(15),
+    phone VARCHAR(15)
 	
 );
 
@@ -38,7 +38,7 @@ CREATE TABLE Schedule (
     member_name VARCHAR(20) REFERENCES Members(first_name),
     available_date DATE DEFAULT CURRENT_DATE,
     workout_time VARCHAR(20),
-    room_number INT,
+    room_number INT
     
     
 );
