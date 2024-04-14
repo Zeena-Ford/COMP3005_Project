@@ -10,7 +10,7 @@ import java.sql.*;
 
 public class Member {
 
-    AdministrativeClass ac = new AdministrativeClass();
+    AdministrativeStaff ac = new AdministrativeStaff();
 
     /**
      * Allows new users to register into the gym database - credit card amount from each member on the dashboard decrements -100 after registering, and gets registered in billing history table - Inserts into Members table
@@ -37,7 +37,7 @@ public class Member {
             //calling billingAndPaymentHistory function to allow the new membership fee of the new registered member to be saved in the payment history file within the gym database
             ac.billingAndPaymentHistory(firstName, lastName, newMembership, initialCost);
             //executing database query to output the records from 'students' database
-            String querySQL = "INSERT INTO members (first_name, last_name, email, phone, join_date, credit_card_balance) VALUES (?, ?, ?, ?, ?, ?)";
+            String querySQL = "INSERT INTO members (first_name, last_name, email, phone, join_date, credit_card_balance) VALUES (?, ?, ?, ?, ?, ?); INSERT INTO dashboard (first_name, last_name, goals, achievements, active_time) VALUES (?, ?, NULL, NULL, 0); INSERT INTO payment (first_name, last_name, fee_type, amount) VALUES (?, ?, 'new membership', 100);";
 
             //ResultSet resultSet = statement.getResultSet();
 
@@ -49,6 +49,10 @@ public class Member {
             prepState.setString(4, memberNumber);
             prepState.setDate(5, joinedDate);
             prepState.setInt(6, creditCard);
+            prepState.setString(7, firstName);
+            prepState.setString(8, lastName);
+            prepState.setString(9, firstName);
+            prepState.setString(10, lastName);
             //statement.executeUpdate(querySQL);
             prepState.executeQuery();
             //prepState.executeUpdate();
@@ -105,7 +109,7 @@ public class Member {
             ResultSet resultSQL = prepState.getResultSet();
             //iterate through the table to output the provided results to display the records including the updated email
             while (resultSQL.next()) { //fourth difference
-                System.out.println("first_name     last_name        goals          achievement       active_time" + "\n");
+                System.out.println("first_name      last_name        goals          achievement       active_time" + "\n");
                 System.out.println(resultSQL.getString("first_name") + "\t\t\t" + resultSQL.getString("last_name") + "\t\t\t" + resultSQL.getString("goals") + "\t\t\t" + resultSQL.getString("achievements")+ "\t\t\t" + resultSQL.getString("active_time"));
             }
             // catch exception (SQL Exception included) and print results
@@ -143,7 +147,7 @@ public class Member {
             ResultSet resultSQL = prepState.getResultSet();
             //iterate through the table to output the provided results to display the dashboard
             while (resultSQL.next()) {
-                System.out.println("first_name     last_name        goals          achievement       active_time" + "\n");
+                System.out.println("first_name     last_name            goals                 achievement         active_time" + "\n");
                 System.out.println(resultSQL.getString("first_name") + "\t\t\t" + resultSQL.getString("last_name") + "\t\t\t" + resultSQL.getString("goals") + "\t\t\t" + resultSQL.getString("achievements")+ "\t\t\t" + resultSQL.getString("active_time"));
             }
             //catch exception (SQL Exception included) and print results
