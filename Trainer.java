@@ -1,23 +1,19 @@
 /**
- *  Trainer class representing the trainers in a Gym
+ *  Administrative class representing the administrative staff in a Gym
  *
- * @author Zeena Ford 101229954, Zeina Mouhtadi 101169685
+ * @author Zeena Ford 101229954, Zeina Mouhtadi, 101169685
  * @version April 12, 2024
  */
 
-
 import java.sql.*;
 
-public class Trainer {
-    AdministrativeStaff ad = new AdministrativeStaff();
-    Member mem1 = new Member();
+public class AdministrativeStaff {
 
     /**
-     * Allows trainers to set the time for which they are available and schedule a fitness class
-     * @param trainerName represents the first name of the trainer
-     * @param timeFrame represents the time that the trainer is available
+     * Allows administrative staff book a workout room once the trainer has booked a time slot - status of room changes to 'booked'
+     * @param timeFrame represents the time that the room was booked
      */
-    public void scheduleManagement(String trainerName, String timeFrame, String stat) { //right order in parameter
+    public void roomBookingManagement(String timeFrame, String trainerName, String stat){ //right order in parameter
         //url code containing the local host, user, password and name for the database
         String url = "jdbc:postgresql://localhost:5432/health and fitness management system";
         String user = "postgres";
@@ -27,45 +23,42 @@ public class Trainer {
             //enabling connection between the database and the application using the provided driver
             Connection connectSQL = DriverManager.getConnection(url, user, password);
             Statement statement = connectSQL.createStatement();
-            //executing database query to output the records from 'students' database
-            String querySQL = "UPDATE schedule SET workout_time = ? WHERE trainer_name = ?; UPDATE rooms SET workout_time = ? WHERE trainer_name = ?; UPDATE rooms SET status = ? WHERE workout_time = ?; UPDATE rooms SET maintenance = 'being used' WHERE workout_time = ? "; //INSERT INTO schedule (trainer_name, member_name, available_date, workout_time, room_number) VALUES (?, ?, ?, ?, ?)";
+
+            //executing database query to allow the staff to book a room once a trainer schedules their available time for a workout room
+            String querySQL = "UPDATE rooms SET status = ? WHERE workout_time = ? AND trainer_name = ?"; //INSERT INTO schedule (trainer_name, member_name, available_date, workout_time, room_number) VALUES (?, ?, ?, ?, ?)";
 
             //ResultSet resultSet = statement.getResultSet();
             PreparedStatement prepState = connectSQL.prepareStatement(querySQL);
-            prepState.setString(1, timeFrame);
-            prepState.setString(2, trainerName);
-            prepState.setString(3, timeFrame);
-            prepState.setString(4, trainerName);
-            prepState.setString(5, stat);
-            prepState.setString(6, timeFrame);
-            prepState.setString(7, timeFrame);
+            //setting the parameters of the query as the inputted parameter for the trainer time
+            prepState.setString(1, stat);
+            prepState.setString(2, timeFrame);
+            prepState.setString(3, trainerName);
             //statement.executeUpdate(querySQL);
             prepState.executeQuery();
-            //statement.executeQuery("select * from SCHEDULE");
-            //calling roomBookingManagement function to allow the trainer to book a workout room once they have scheduled a workout class into the SCHEDULE table with the timeframe included
-            ad.roomBookingManagement(timeFrame, trainerName, stat);
+            //statement.executeQuery("select * from ROOMS");
 
             //statement.executeUpdate(querySQL);
             //statement.executeQuery("select * from STUDENTS");
             ResultSet resultSQL = prepState.getResultSet();
             //iterate through the table to output the provided results to display the records including the updated email
             while (resultSQL.next()) { //fourth difference
-                System.out.println("trainer_name     member_name        available_date          workout_time       room_number" + "\n");
-                System.out.println(resultSQL.getString("trainer_name") + "\t\t\t" + resultSQL.getString("member_name") + "\t\t\t" + resultSQL.getString("available_date") + "\t\t\t" + resultSQL.getString("workout_time")+ "\t\t\t" + resultSQL.getString("room_number"));
+                System.out.println("trainer_name     room_number        workout_time          status       maintenance" + "\n");
+                System.out.println(resultSQL.getString("trainer_name") + "\t\t\t" + resultSQL.getString("room_number") + "\t\t\t" + resultSQL.getString("workout_time") + "\t\t\t" + resultSQL.getString("status")+ "\t\t\t" + resultSQL.getString("maintenance"));
             }
             //catch exception (SQL Exception included) and print results
         } catch (Exception e) {
             System.out.println(e);
         }
+
     }
 
     /**
-     * Allows trainers to view the profile of the member they search
-     * @param firstName represents the first name of the member that the trainer searches
-     * @param lastName represents the last name of the member that the trainer searches
+     * Allows administrative staff to clean the workout room once the trainer has ended the class
+     * @param trainerName represents the trainer that has booked the class
+     * @param timeFrame represents the time slot that the room is booked for
      */
 
-    public void memberProfileViewing(String firstName, String lastName){
+    public void equipmentMaintenanceMonitoring(String trainerName, String timeFrame){ //right order in parameter
         //url code containing the local host, user, password and name for the database
         String url = "jdbc:postgresql://localhost:5432/health and fitness management system";
         String user = "postgres";
@@ -75,73 +68,159 @@ public class Trainer {
             //enabling connection between the database and the application using the provided driver
             Connection connectSQL = DriverManager.getConnection(url, user, password);
             Statement statement = connectSQL.createStatement();
-            //executing database query to allow the trainer to display the view of a member's profile
 
-            String querySQL = "SELECT first_name, last_name, email, phone, join_date, credit_card_balance FROM members WHERE first_name = ? AND last_name = ?"; // WHERE workout_time = ? //UPDATE schedule SET member_name = ? WHERE workout_time = ? AND member_name IS NULL";
-            PreparedStatement prepState = connectSQL.prepareStatement(querySQL);
-            prepState.setString(1, firstName);
-            prepState.setString(2, lastName);
-            prepState.executeQuery();
-
-            ResultSet resultSQL = prepState.getResultSet();
-            //iterate through the table to output the provided results to display the records including the updated email
-            while (resultSQL.next()) {
-                System.out.println("first_name       last_name                email                     phone               join_date      credit_card_balance" + "\n");
-                System.out.println(resultSQL.getString("first_name") + "\t\t\t\t\t" + resultSQL.getString("last_name") + "\t\t\t" + resultSQL.getString("email") + "\t\t\t" + resultSQL.getString("phone")+ "\t\t\t" + resultSQL.getString("join_date")+ "\t\t\t" + resultSQL.getString("credit_card_balance"));
-            }
-            //catch exception (SQL Exception included) and print results
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Allows trainers to end their workout class
-     * @param trainerName represents the first name of the trainer
-     * @param timeFrame represents the time that the workout began
-     * @param clientMember represents the client (member) that the trainer is training
-     */
-
-    public void endWorkoutClass(String trainerName, String timeFrame, String clientMember){
-        //url code containing the local host, user, password and name for the database
-        String url = "jdbc:postgresql://localhost:5432/health and fitness management system";
-        String user = "postgres";
-        String password = "datapass";
-        try {
-            Class.forName("org.postgresql.Driver");
-            //enabling connection between the database and the application using the provided driver
-            Connection connectSQL = DriverManager.getConnection(url, user, password);
-            Statement statement = connectSQL.createStatement();
-            mem1.appleWatch(clientMember);
-            //calling equipmentMaintenanceMonitoring to allow the maintenance staff to clean the workout room once the trainer has ended the class
-            ad.equipmentMaintenanceMonitoring(trainerName, timeFrame);
-            String querySQL = "UPDATE schedule SET workout_time = NULL WHERE trainer_name = ?; UPDATE schedule SET member_name = NULL WHERE trainer_name = ?; UPDATE rooms SET workout_time = NULL WHERE trainer_name = ?; UPDATE rooms SET status = 'room pending' WHERE trainer_name = ?";
+            //executing database query to update the maintenance of the room to "cleaned" after the workout room has been used
+            String querySQL = "UPDATE rooms SET maintenance = 'cleaned' WHERE trainer_name = ? AND workout_time = ?"; //INSERT INTO schedule (trainer_name, member_name, available_date, workout_time, room_number) VALUES (?, ?, ?, ?, ?)";
 
             //ResultSet resultSet = statement.getResultSet();
             PreparedStatement prepState = connectSQL.prepareStatement(querySQL);
+            //setting the parameters of the query as the inputted parameters from the user
             prepState.setString(1, trainerName);
-            prepState.setString(2, trainerName);
-            prepState.setString(3, trainerName);
-            prepState.setString(4, trainerName);
-
+            prepState.setString(2, timeFrame);
             //statement.executeUpdate(querySQL);
-            prepState.executeUpdate();
-            statement.executeQuery("select * from SCHEDULE");
+            prepState.executeQuery();
+            //statement.executeQuery("select * from ROOMS");
+
             //statement.executeUpdate(querySQL);
             //statement.executeQuery("select * from STUDENTS");
-            ResultSet resultSet = statement.getResultSet();
-
+            ResultSet resultSQL = prepState.getResultSet();
+            //iterate through the table to output the provided results to display the records including the updated email
+            while (resultSQL.next()) { //fourth difference
+                System.out.println("trainer_name     room_number        workout_time          status       maintenance" + "\n");
+                System.out.println(resultSQL.getString("trainer_name") + "\t\t\t" + resultSQL.getString("room_number") + "\t\t\t" + resultSQL.getString("workout_time") + "\t\t\t" + resultSQL.getString("status")+ "\t\t\t" + resultSQL.getString("maintenance"));
+            }
             //catch exception (SQL Exception included) and print results
-
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
 
+
+    /**
+     * Allows staff to update the class schedule (if a class was cancelled, etc.)
+     * @param trainerName represents the trainer that currently has a scheduled workout class
+     * @param timeFrame represents the time slot that the trainer has booked
+     */
+
+    public void classScheduleUpdating(String trainerName, String timeFrame, String upDate){ //right order in parameter
+        //url code containing the local host, user, password and name for the database
+        String url = "jdbc:postgresql://localhost:5432/health and fitness management system";
+        String user = "postgres";
+        String password = "datapass";
+        try {
+            Class.forName("org.postgresql.Driver");
+            //enabling connection between the database and the application using the provided driver
+            Connection connectSQL = DriverManager.getConnection(url, user, password);
+            Statement statement = connectSQL.createStatement();
+            //executing database query to output the SCHEDULE table after updates
+            String querySQL = "UPDATE schedule SET workout_time = ? WHERE trainer_name = ? AND workout_time = ?"; //INSERT INTO schedule (trainer_name, member_name, available_date, workout_time, room_number) VALUES (?, ?, ?, ?, ?)";
+
+            //ResultSet resultSet = statement.getResultSet();
+            PreparedStatement prepState = connectSQL.prepareStatement(querySQL);
+            prepState.setString(1, upDate);
+            prepState.setString(2, trainerName);
+            prepState.setString(3, timeFrame);
+            //statement.executeUpdate(querySQL);
+            prepState.executeQuery();
+            //statement.executeQuery("select * from SCHEDULE");
+
+            ResultSet resultSQL = prepState.getResultSet();
+            //iterate through the table to output the provided results to display the records including the updated email
+            while (resultSQL.next()) { //fourth difference
+                System.out.println("trainer_name     member_name        available_date          workout_time       room_number" + "\n");
+                System.out.println(resultSQL.getString("trainer_name") + "\t\t\t" + resultSQL.getString("member_name") + "\t\t\t" + resultSQL.getString("available_date") + "\t\t\t" + resultSQL.getString("workout_time")+ "\t\t\t" + resultSQL.getString("room_number"));
+            }
+
+            //catch exception (SQL Exception included) and print results
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
 
 
+    /**
+     * Keeps the history of payments that is updated; the credit card amount of each member on the profile dashboard decreases (decrements) once a member provides a payment of some sort (either $20 for fitness class or $100 for new membership fee from userRegistration)
+     * @param firstName represents the first name of the member that provided a payment
+     * @param lastName represents the last name of the member that provided a payment
+     * @param feeType represents the fee type of the payment (ex: new membership fee, fitness class fee)
+     * @param cost represents the cost of the fee type (ex: new membership fee = $100, fitness class fee = $20)
+     *
+     */
 
+    public void billingAndPaymentHistory(String firstName, String lastName, String feeType, int cost){ //right order in parameter
+        //url code containing the local host, user, password and name for the database
+        String url = "jdbc:postgresql://localhost:5432/health and fitness management system";
+        String user = "postgres";
+        String password = "datapass";
+        try {
+            Class.forName("org.postgresql.Driver");
+            //enabling connection between the database and the application using the provided driver
+            Connection connectSQL = DriverManager.getConnection(url, user, password);
+            Statement statement = connectSQL.createStatement();
+            //executing database query to output the billing payment history that gets updated once a member provides a payment of some sort (new membership fee or fitness class fee)
 
+            String querySQL = "UPDATE members SET credit_card_balance = credit_card_balance - ? WHERE first_name = ? AND last_name = ?; INSERT INTO payment (first_name, last_name, fee_type, amount) VALUES (?,?,?,?)";//INSERT INTO schedule (trainer_name, member_name, available_date, workout_time, room_number) VALUES (?, ?, ?, ?, ?)";
+
+            //ResultSet resultSet = statement.getResultSet();
+            PreparedStatement prepState = connectSQL.prepareStatement(querySQL);
+            prepState.setInt(1, cost);
+            prepState.setString(2, firstName);
+            prepState.setString(3, lastName);
+            prepState.setString(4, firstName);
+            prepState.setString(5, lastName);
+            prepState.setString(6, feeType);
+            prepState.setInt(7, cost);
+
+            //statement.executeUpdate(querySQL);
+            prepState.executeQuery();
+            //statement.executeQuery("select * from SCHEDULE");
+
+            ResultSet resultSQL = prepState.getResultSet();
+            //iterate through the table to output the provided results to display the SCHEDULE table after a member has scheduled a fitness class
+            while (resultSQL.next()) { //fourth difference
+                System.out.println("first_name     last_name        fee_type          amount" + "\n");
+                System.out.println(resultSQL.getString("first_name") + "\t\t\t" + resultSQL.getString("last_name") + "\t\t\t" + resultSQL.getString("fee_type") + "\t\t\t" + resultSQL.getString("amount")+ "\t\t\t");
+            }
+
+            //catch exception (SQL Exception included) and print results
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public void resetDay(){ //right order in parameter
+        //url code containing the local host, user, password and name for the database
+        String url = "jdbc:postgresql://localhost:5432/health and fitness management system";
+        String user = "postgres";
+        String password = "datapass";
+        try {
+            Class.forName("org.postgresql.Driver");
+            //enabling connection between the database and the application using the provided driver
+            Connection connectSQL = DriverManager.getConnection(url, user, password);
+            Statement statement = connectSQL.createStatement();
+            //executing database query to output the SCHEDULE table after updates
+            //String querySQL = "UPDATE schedule SET workout_time = NULL; UPDATE schedule SET member_name = NULL; //INSERT INTO schedule (trainer_name, member_name, available_date, workout_time, room_number) VALUES (?, ?, ?, ?, ?)";
+
+            //ResultSet resultSet = statement.getResultSet();
+            //PreparedStatement prepState = connectSQL.prepareStatement(querySQL);
+            //prepState.setString(1, trainerName);
+            //prepState.setString(2, timeFrame);
+            //statement.executeUpdate(querySQL);
+            //prepState.executeQuery();
+            statement.executeQuery("UPDATE schedule SET workout_time = NULL; UPDATE schedule SET member_name = NULL");
+
+            ResultSet resultSQL = statement.getResultSet();
+            //iterate through the table to output the provided results to display the records including the updated email
+            while (resultSQL.next()) { //fourth difference
+                System.out.println("trainer_name     member_name        available_date          workout_time       room_number" + "\n");
+                System.out.println(resultSQL.getString("trainer_name") + "\t\t\t" + resultSQL.getString("member_name") + "\t\t\t" + resultSQL.getString("available_date") + "\t\t\t" + resultSQL.getString("workout_time")+ "\t\t\t" + resultSQL.getString("room_number"));
+            }
+
+            //catch exception (SQL Exception included) and print results
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
 
 }
