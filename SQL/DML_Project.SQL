@@ -22,15 +22,15 @@ VALUES
 ('Krist', 'Loth', 'build back muscle', 'ab workout', 60),
 ('Lilly', 'Blake', 'become more toned', 'lose 5 pounds', 0),
 ('Ben', 'Flore', 'lose 15 pounds', 'made a meal plan', 0),
-('Mere', 'Flow', 'merethon training', 'built running schedule', 120);
+('James', 'Potter', 'marathon training', 'built running schedule', 120);
 
 
 
 INSERT INTO Schedule (trainer_name, member_name, available_date, workout_time, room_number) 
 VALUES 
 ('Kevin', NULL, '2023-02-07', NULL, '101'),
-('Dawson', NULL,'102', '2023-02-07', NULL, '102'),
-('Dan', NULL,'103', '2023-02-07', NULL, '103');
+('Dawson', NULL, '2023-02-07', NULL, '102'),
+('Dan', NULL, '2023-02-07', NULL, '103');
 
 
 
@@ -48,6 +48,4 @@ VALUES
 ('Lilly', 'Blake', 'new membership', 100),
 ('Ben', 'Flore', 'new membership', 100),
 ('James', 'Potter', 'new membership', 100);
-
-
 
