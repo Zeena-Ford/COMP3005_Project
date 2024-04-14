@@ -9,7 +9,7 @@
 import java.sql.*;
 
 public class Trainer {
-    AdministrativeClass ad = new AdministrativeClass();
+    AdministrativeStaff ad = new AdministrativeStaff();
     Member mem1 = new Member();
 
     /**
@@ -17,7 +17,7 @@ public class Trainer {
      * @param trainerName represents the first name of the trainer
      * @param timeFrame represents the time that the trainer is available
      */
-    public void scheduleManagement(String trainerName, String timeFrame) { //right order in parameter
+    public void scheduleManagement(String trainerName, String timeFrame, String stat) { //right order in parameter
         //url code containing the local host, user, password and name for the database
         String url = "jdbc:postgresql://localhost:5432/health and fitness management system";
         String user = "postgres";
@@ -28,7 +28,7 @@ public class Trainer {
             Connection connectSQL = DriverManager.getConnection(url, user, password);
             Statement statement = connectSQL.createStatement();
             //executing database query to output the records from 'students' database
-            String querySQL = "UPDATE schedule SET workout_time = ? WHERE trainer_name = ?; UPDATE rooms SET workout_time = ? WHERE trainer_name = ?; UPDATE rooms SET maintenance = 'being used' WHERE workout_time = ? "; //INSERT INTO schedule (trainer_name, member_name, available_date, workout_time, room_number) VALUES (?, ?, ?, ?, ?)";
+            String querySQL = "UPDATE schedule SET workout_time = ? WHERE trainer_name = ?; UPDATE rooms SET workout_time = ? WHERE trainer_name = ?; UPDATE rooms SET status = ? WHERE workout_time = ?; UPDATE rooms SET maintenance = 'being used' WHERE workout_time = ? "; //INSERT INTO schedule (trainer_name, member_name, available_date, workout_time, room_number) VALUES (?, ?, ?, ?, ?)";
 
             //ResultSet resultSet = statement.getResultSet();
             PreparedStatement prepState = connectSQL.prepareStatement(querySQL);
@@ -36,12 +36,14 @@ public class Trainer {
             prepState.setString(2, trainerName);
             prepState.setString(3, timeFrame);
             prepState.setString(4, trainerName);
-            prepState.setString(5, timeFrame);
+            prepState.setString(5, stat);
+            prepState.setString(6, timeFrame);
+            prepState.setString(7, timeFrame);
             //statement.executeUpdate(querySQL);
             prepState.executeQuery();
             //statement.executeQuery("select * from SCHEDULE");
             //calling roomBookingManagement function to allow the trainer to book a workout room once they have scheduled a workout class into the SCHEDULE table with the timeframe included
-            ad.roomBookingManagement(timeFrame);
+            ad.roomBookingManagement(timeFrame, trainerName, stat);
 
             //statement.executeUpdate(querySQL);
             //statement.executeQuery("select * from STUDENTS");
@@ -113,13 +115,14 @@ public class Trainer {
             mem1.appleWatch(clientMember);
             //calling equipmentMaintenanceMonitoring to allow the maintenance staff to clean the workout room once the trainer has ended the class
             ad.equipmentMaintenanceMonitoring(trainerName, timeFrame);
-            String querySQL = "UPDATE schedule SET workout_time = NULL WHERE trainer_name = ?; UPDATE rooms SET workout_time = NULL WHERE trainer_name = ?; UPDATE rooms SET status = 'room pending' WHERE trainer_name = ?";
+            String querySQL = "UPDATE schedule SET workout_time = NULL WHERE trainer_name = ?; UPDATE schedule SET member_name = NULL WHERE trainer_name = ?; UPDATE rooms SET workout_time = NULL WHERE trainer_name = ?; UPDATE rooms SET status = 'room pending' WHERE trainer_name = ?";
 
             //ResultSet resultSet = statement.getResultSet();
             PreparedStatement prepState = connectSQL.prepareStatement(querySQL);
             prepState.setString(1, trainerName);
             prepState.setString(2, trainerName);
             prepState.setString(3, trainerName);
+            prepState.setString(4, trainerName);
 
             //statement.executeUpdate(querySQL);
             prepState.executeUpdate();
@@ -142,9 +145,3 @@ public class Trainer {
 
 
 }
-
-
-
-
-
-
